@@ -21,8 +21,14 @@ public class ConnectionManager {
     }
 
     public void initConnection() throws URISyntaxException, DeploymentException, IOException {
-        this.session = this.container.connectToServer(this.endpoint, new URI(Main.getWebsocketForKristServer()));
+        this.session = this.container.connectToServer(this.endpoint, new URI(Main.getStarterWebsocketforKristServer()));
         this.endpoint.sendMessage("Content-Type: application/x-www-form-urlencoded");
+
+        String response = this.endpoint.response.getResponseOrNull();
+        while (response == null) {
+            response = this.endpoint.response.getResponseOrNull();
+        }
+        System.out.println(response);
     }
 
     public void sendMessageToServer(String message) throws IOException {

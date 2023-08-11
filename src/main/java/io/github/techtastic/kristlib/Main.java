@@ -1,5 +1,7 @@
 package io.github.techtastic.kristlib;
 
+import io.github.techtastic.kristlib.util.JsonDecoder;
+import io.github.techtastic.kristlib.util.JsonEncoder;
 import io.github.techtastic.kristlib.websocket.ConnectionManager;
 
 import javax.websocket.DeploymentException;
@@ -11,13 +13,9 @@ public class Main {
     public static String WEBSOCKET = "wss://";
     public static String HTTPS = "https://";
 
-    public static ConnectionManager manager;
+    public static ConnectionManager manager = new ConnectionManager();
     public static JsonEncoder ENCODER = new JsonEncoder();
     public static JsonDecoder DECODER = new JsonDecoder();
-
-    public Main() {
-        manager = new ConnectionManager();
-    }
 
     public static String getWebsocketForKristServer() {
         return WEBSOCKET + KRIST_SERVER_URL;
@@ -30,13 +28,17 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Hello world!");
 
+        startUp();
+    }
+
+    public static void startUp() {
         try {
             manager.initConnection();
 
-            //manager.sendMessageToServer(ENCODER.encode());
+            //manager.sendMessageToServer();
         } catch (URISyntaxException | DeploymentException | IOException e) {
             System.err.println("Cannot connect to Krist Server!\nError: " + e);
-            //throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }
