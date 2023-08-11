@@ -16,10 +16,10 @@ public class KristClientEndpoint extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
         this.session = session;
 
-        this.session.addMessageHandler(this.response);
+        this.session.addMessageHandler(response);
     }
 
-    public void sendMessage(String message) throws IOException {
+    public void sendRequest(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
     }
 }

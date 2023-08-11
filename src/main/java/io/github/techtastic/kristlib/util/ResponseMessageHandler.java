@@ -8,9 +8,14 @@ public class ResponseMessageHandler implements MessageHandler.Whole<String> {
     @Override
     public void onMessage(String response) {
         this.response = response;
+        System.err.println(response);
     }
 
     public String getResponseOrNull() {
         return this.response;
+    }
+
+    public void clearResponse() {
+        this.response = null;
     }
 }
