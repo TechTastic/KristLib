@@ -1,4 +1,4 @@
-package io.github.techtastic.kristlib.api;
+package io.github.techtastic.kristlib.api.transaction;
 
 public enum TransactionType {
     MINED,

@@ -1,4 +1,4 @@
-package io.github.techtastic.kristlib.util;
+package io.github.techtastic.kristlib.websocket;
 
 import javax.websocket.MessageHandler;
 

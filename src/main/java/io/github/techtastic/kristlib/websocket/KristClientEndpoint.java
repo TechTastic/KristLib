@@ -1,10 +1,7 @@
 package io.github.techtastic.kristlib.websocket;
 
-import io.github.techtastic.kristlib.util.ResponseMessageHandler;
-
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import java.io.IOException;
 
