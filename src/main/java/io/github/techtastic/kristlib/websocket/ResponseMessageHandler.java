@@ -2,6 +2,9 @@ package io.github.techtastic.kristlib.websocket;
 
 import javax.websocket.MessageHandler;
 
+/**
+ * This class is for handling responses to WSS requests
+ */
 public class ResponseMessageHandler implements MessageHandler.Whole<String> {
     private String response;
 

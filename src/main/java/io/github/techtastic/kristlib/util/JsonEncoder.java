@@ -7,6 +7,11 @@ import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
+/**
+ * This class is a helper class for getting Strings from JsonObjects
+ *
+ * @author TechTastic
+ */
 public class JsonEncoder implements Encoder.Text<JsonObject> {
 
     private static final Gson gson = new Gson();

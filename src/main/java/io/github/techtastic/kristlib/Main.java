@@ -5,10 +5,6 @@ import io.github.techtastic.kristlib.util.JsonDecoder;
 import io.github.techtastic.kristlib.util.JsonEncoder;
 import io.github.techtastic.kristlib.websocket.ConnectionManager;
 
-import javax.websocket.DecodeException;
-import javax.websocket.DeploymentException;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Map;
 
 public class Main {

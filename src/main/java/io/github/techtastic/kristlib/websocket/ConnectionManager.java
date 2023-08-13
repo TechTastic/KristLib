@@ -43,7 +43,8 @@ public class ConnectionManager {
         System.out.println("Successfully Connected to Krist Server!");
     }
 
-    public JsonObject getInitialWebsocketConnection() {
+    @NotNull
+    private JsonObject getInitialWebsocketConnection() {
         try {
             URL url = new URL(KristURLConstants.KRIST_WEBSOCKET_INITIALIZE);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -59,10 +60,7 @@ public class ConnectionManager {
             return Main.DECODER.decode(sb.toString());
         } catch (Exception e) {
             e.fillInStackTrace();
-
-            JsonObject err = new JsonObject();
-            err.addProperty("execption", e.toString());
-            return err;
+            throw new RuntimeException(e);
         }
     }
 

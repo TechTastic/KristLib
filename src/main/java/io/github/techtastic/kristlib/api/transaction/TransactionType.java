@@ -1,5 +1,10 @@
 package io.github.techtastic.kristlib.api.transaction;
 
+/**
+ * This class is for giving the type of a transaction in a less vague format than String
+ *
+ * @author TechTastic
+ */
 public enum TransactionType {
     MINED,
     TRANSFER,

@@ -1,5 +1,10 @@
 package io.github.techtastic.kristlib.util;
 
+/**
+ * This class is a helpful constants class for interactions with HTTP and WSS requests to the Krist node
+ *
+ * @author TechTastic
+ */
 public class KristURLConstants {
     public static String KRIST_BASE_URL;
     public static String KRIST_WEBSOCKET_INITIALIZE;

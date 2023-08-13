@@ -7,12 +7,17 @@ import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
+/**
+ * This class is a helper class for getting usable JsonObjects from Strings
+ *
+ * @author TechTastic
+ */
 public class JsonDecoder implements Decoder.Text<JsonObject> {
 
     private static final Gson gson = new Gson();
 
     @Override
-    public JsonObject decode(String s) throws DecodeException {
+    public JsonObject decode(String s) {
         return gson.fromJson(s, JsonObject.class);
     }
 
