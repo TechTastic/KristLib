@@ -19,16 +19,11 @@ import java.util.Map;
 public class AddressAPI {
     /**
      * This method is for creating a completely new Krist address via the Krist node
-     * <p>
-     * Although I am not enforcing it, please use best practices for creaqting secure passwords
      *
-     * @param password the password of the new address
+     * @param privatekey the private key of the new address
      * @return the newly created address as a KristAddress
      */
-    public static KristAddress createNewAddress(String password) {
-        // Create Private Key
-        String privatekey = KristUtil.getPrivateKeyFromPassword(password);
-
+    public static KristAddress createNewAddress(String privatekey) {
         // Get v2 address from Private Key
         KristAddress address = getAddressFromPrivateKey(privatekey);
 

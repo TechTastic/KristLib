@@ -31,7 +31,7 @@ public class KristTransaction {
      *
      * @param transaction A JsonObject, usually received from responses from the Krist node
      */
-    private KristTransaction(@NotNull JsonObject transaction) {
+    KristTransaction(@NotNull JsonObject transaction) {
         this.id = transaction.get("id").getAsInt();
         this.sender = transaction.get("from").getAsString();
         this.receiver = transaction.get("to").getAsString();
@@ -49,7 +49,7 @@ public class KristTransaction {
      *
      * @param id A transaction ID as an int, usually received from responses from the Krist node
      */
-    private KristTransaction(int id) {
+    KristTransaction(int id) {
         this(KristUtil.validateResponse(Main.sendHTTPRequest(
                 KristURLConstants.KRIST_TRANSACTIONS_URL +
                         "/" + id, "GET")));

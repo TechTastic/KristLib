@@ -29,7 +29,7 @@ public class KristName {
      *
      * @param name A JsonObject, usually received from responses from the Krist node
      */
-    private KristName(@NotNull JsonObject name) {
+    KristName(@NotNull JsonObject name) {
         this.name = name.get("name").getAsString();
         this.owner = name.get("owner").getAsString();
         this.originalOwner = name.get("original_owner").getAsString();
@@ -45,7 +45,7 @@ public class KristName {
      *
      * @param name A String of the name, usually received from responses from the Krist node
      */
-    private KristName(@NotNull String name) {
+    KristName(@NotNull String name) {
         this(KristUtil.validateResponse(
                 Main.sendHTTPRequest(KristURLConstants.KRIST_NAMES_URL +
                         "/" + name, "GET")));
