@@ -1,7 +1,7 @@
 package io.github.techtastic.kristlib.api.address;
 
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.Main;
+import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.util.KristURLConstants;
 import io.github.techtastic.kristlib.util.KristUtil;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ public class KristAddress {
      */
     KristAddress(@NotNull String address) {
         this(KristUtil.validateResponse(
-                Main.sendHTTPRequest(KristURLConstants.KRIST_ADDRESSES +
+                KristConnectionHandler.sendHTTPRequest(KristURLConstants.KRIST_ADDRESSES +
                         "/" + address, "GET")));
     }
 
@@ -104,7 +104,7 @@ public class KristAddress {
      */
     public void update() {
         JsonObject response = KristUtil.validateResponse(
-                Main.sendHTTPRequest(KristURLConstants.KRIST_ADDRESSES +
+                KristConnectionHandler.sendHTTPRequest(KristURLConstants.KRIST_ADDRESSES +
                         "/" + this.address, "GET"));
         this.address = response.get("address").getAsString();
         this.balance = response.get("balance").getAsInt();

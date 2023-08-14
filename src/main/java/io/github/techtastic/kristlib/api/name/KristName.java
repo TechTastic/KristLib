@@ -1,7 +1,7 @@
 package io.github.techtastic.kristlib.api.name;
 
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.Main;
+import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.util.KristURLConstants;
 import io.github.techtastic.kristlib.util.KristUtil;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +47,7 @@ public class KristName {
      */
     KristName(@NotNull String name) {
         this(KristUtil.validateResponse(
-                Main.sendHTTPRequest(KristURLConstants.KRIST_NAMES_URL +
+                KristConnectionHandler.sendHTTPRequest(KristURLConstants.KRIST_NAMES_URL +
                         "/" + name, "GET")));
     }
 
@@ -144,7 +144,7 @@ public class KristName {
      */
     public void update() {
         JsonObject response = KristUtil.validateResponse(
-                Main.sendHTTPRequest(KristURLConstants.KRIST_NAMES_URL +
+                KristConnectionHandler.sendHTTPRequest(KristURLConstants.KRIST_NAMES_URL +
                         "/" + this.name, "GET"));
         this.name = response.get("name").getAsString();
         this.owner = response.get("owner").getAsString();

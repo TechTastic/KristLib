@@ -5,15 +5,17 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
 import java.io.IOException;
 
-public class KristClientEndpoint extends Endpoint {
+class KristClientEndpoint extends Endpoint {
     Session session;
     public ResponseMessageHandler response = new ResponseMessageHandler();
+    public KristEventMessageHandler event = new KristEventMessageHandler();
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
         this.session = session;
 
         this.session.addMessageHandler(response);
+        this.session.addMessageHandler(event);
     }
 
     public void sendRequest(String message) throws IOException {

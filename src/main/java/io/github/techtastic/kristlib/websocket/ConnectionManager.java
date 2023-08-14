@@ -1,17 +1,16 @@
 package io.github.techtastic.kristlib.websocket;
 
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.Main;
+import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.util.KristURLConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.websocket.*;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
 
@@ -20,6 +19,7 @@ public class ConnectionManager {
     public WebSocketContainer container;
     public KristClientEndpoint endpoint;
     public Session session;
+    private boolean isConnectionInitialized = false;
 
     public ConnectionManager() {
         this.container = ContainerProvider.getWebSocketContainer();
@@ -32,15 +32,22 @@ public class ConnectionManager {
         return id;
     }
 
-    public void initConnection() throws URISyntaxException, DeploymentException, IOException {
+    public void initConnection() {
         JsonObject initResponse = getInitialWebsocketConnection();
 
         if (initResponse.has("exception"))
             throw new RuntimeException("Failed to Connect to Krist Server!\n" + initResponse.get("exception").getAsString());
 
-        this.session = this.container.connectToServer(this.endpoint, new URI(initResponse.get("url").getAsString()));
-        
-        System.out.println("Successfully Connected to Krist Server!");
+        try {
+            this.session = this.container.connectToServer(this.endpoint, new URI(initResponse.get("url").getAsString()));
+
+            this.isConnectionInitialized = true;
+            System.out.println("Successfully Connected to Krist Server!");
+        } catch (Exception e) {
+            System.out.println("Could not connect to KristServer!");
+            e.fillInStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @NotNull
@@ -57,7 +64,7 @@ public class ConnectionManager {
             while ((output = br.readLine()) != null) {
                 sb.append(output);
             }
-            return Main.DECODER.decode(sb.toString());
+            return KristConnectionHandler.DECODER.decode(sb.toString());
         } catch (Exception e) {
             e.fillInStackTrace();
             throw new RuntimeException(e);
@@ -66,35 +73,14 @@ public class ConnectionManager {
 
     @NotNull
     public JsonObject getInfoFromURL(String urlString, String method) {
-        try {
-            // Establish Connection and Set Request
-            URL url = new URL(urlString);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setDoOutput(true);
-            con.setRequestMethod(method);
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setRequestProperty("Accepts", "application/json");
-
-            // Get Response
-            BufferedReader br = new BufferedReader(new InputStreamReader(con.getResponseCode() == 200 ? con.getInputStream() : con.getErrorStream()));
-            StringBuilder sb = new StringBuilder();
-            String output;
-            while ((output = br.readLine()) != null) {
-                sb.append(output);
-            }
-
-            // TODO: Get Rid of Debug
-            System.out.println(sb);
-
-            return Main.DECODER.decode(sb.toString());
-        } catch (Exception e) {
-            e.fillInStackTrace();
-            throw new RuntimeException(e);
-        }
+        return getInfoFromURL(urlString, method, Map.of());
     }
 
     @NotNull
     public JsonObject getInfoFromURL(String urlString, String method, Map<String, String> contents) {
+        if (!this.isConnectionInitialized)
+            throw new RuntimeException("Connection to Krist network has not been initialized!");
+
         try {
             // Establish Connection and Set Request
             URL url = new URL(urlString);
@@ -118,7 +104,7 @@ public class ConnectionManager {
             // TODO: Get Rid of Debug
             System.out.println(sb);
 
-            return Main.DECODER.decode(sb.toString());
+            return KristConnectionHandler.DECODER.decode(sb.toString());
         } catch (Exception e) {
             e.fillInStackTrace();
             throw new RuntimeException(e);
@@ -127,6 +113,9 @@ public class ConnectionManager {
 
     @NotNull
     public JsonObject getInfoFromWSS(JsonObject obj) {
+        if (!this.isConnectionInitialized)
+            throw new RuntimeException("Connection to Krist network has not been initialized!");
+
         int id = getIDForUsage();
         obj.addProperty("id", id);
 
@@ -135,17 +124,17 @@ public class ConnectionManager {
             this.endpoint.response.clearResponse();
 
             // Send Request
-            this.endpoint.sendRequest(Main.ENCODER.encode(obj));
+            this.endpoint.sendRequest(KristConnectionHandler.ENCODER.encode(obj));
 
             // Get Response or Wait
             String response = this.endpoint.response.getResponseOrNull();
-            while (response == null || !Main.DECODER.willDecode(response) ||
-                    !Main.DECODER.decode(response).has("id") ||
-                    Main.DECODER.decode(response).get("id").getAsInt() != id) {
+            while (response == null || !KristConnectionHandler.DECODER.willDecode(response) ||
+                    !KristConnectionHandler.DECODER.decode(response).has("id") ||
+                    KristConnectionHandler.DECODER.decode(response).get("id").getAsInt() != id) {
                 response = this.endpoint.response.getResponseOrNull();
             }
 
-            return Main.DECODER.decode(response);
+            return KristConnectionHandler.DECODER.decode(response);
         } catch (Exception e) {
             e.fillInStackTrace();
             throw new RuntimeException(e);
@@ -158,31 +147,12 @@ public class ConnectionManager {
         return getInfoFromWSS(obj);
     }
 
-    @NotNull
-    public JsonObject login(String privateKey) {
-        // Attempt to Authenticate/Upgrade Connection
-
-        JsonObject obj = new JsonObject();
-        obj.addProperty("type", "login");
-        obj.addProperty("privatekey", privateKey);
-
-        return getInfoFromWSS(obj);
-    }
-
-    @NotNull
-    public JsonObject logout() {
-        // Attempt to Deauthenticate/Downgrade Connection
-
-        JsonObject obj = new JsonObject();
-        obj.addProperty("type", "logout");
-
-        return getInfoFromWSS(obj);
-    }
-
-    public boolean isGuest() {
-        // Is CConnection Authenticated/Upgraded?
-
-        JsonObject obj = this.getInfoFromWSS("me", new JsonObject());
-        return obj.get("isGuest").getAsBoolean();
+    @Nullable
+    public JsonObject getLatestEvent() {
+        try {
+            return KristConnectionHandler.DECODER.decode(this.endpoint.event.getEventOrNull());
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

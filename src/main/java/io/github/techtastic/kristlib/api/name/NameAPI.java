@@ -3,7 +3,7 @@ package io.github.techtastic.kristlib.api.name;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.Main;
+import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.api.address.KristAddress;
 import io.github.techtastic.kristlib.api.transaction.KristTransaction;
 import io.github.techtastic.kristlib.api.transaction.TransactionAPI;
@@ -23,22 +23,22 @@ import java.util.Map;
 public class NameAPI {
     @NotNull
     public static KristName registerNewName(String privatekey, String name) {
-        return new KristName(KristUtil.validateResponse(Main.sendHTTPRequestWithContent(
+        return new KristName(KristUtil.sendAndValidateHTTPRequestWithContent(
                 KristURLConstants.KRIST_NAMES_URL + "/" + name,
-                "POST", Map.of("privatekey", privatekey))));
+                "POST", Map.of("privatekey", privatekey)));
     }
 
     @NotNull
     public static Integer getNameCost() {
-        JsonObject response = KristUtil.validateResponse(Main.sendHTTPRequest(
-                KristURLConstants.KRIST_NAMES_URL + "/cost", "GET"));
+        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
+                KristURLConstants.KRIST_NAMES_URL + "/cost", "GET");
         return response.get("name_cost").getAsInt();
     }
 
     @NotNull
     public static Boolean isNameAvailable(String name) {
-        JsonObject response = KristUtil.validateResponse(Main.sendHTTPRequest(
-                KristURLConstants.KRIST_NAMES_URL + "/check/" + name, "GET"));
+        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
+                KristURLConstants.KRIST_NAMES_URL + "/check/" + name, "GET");
         return response.get("available").getAsBoolean();
     }
 
@@ -55,9 +55,9 @@ public class NameAPI {
     @NotNull
     public static List<KristName> getAllNames(int limit, int offset) {
         List<KristName> list = new ArrayList<>(limit);
-        JsonObject response = KristUtil.validateResponse(Main.sendHTTPRequest(
+        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
                 KristURLConstants.KRIST_NAMES_URL + "?limit=" + limit +
-                        "&offset=" + offset, "GET"));
+                        "&offset=" + offset, "GET");
         JsonArray addresses = response.getAsJsonArray("names");
         for (JsonElement element : addresses) {
             list.add(addresses.asList().indexOf(element),
@@ -68,17 +68,17 @@ public class NameAPI {
 
     @NotNull
     public static Integer getTotalNameCount() {
-        JsonObject response = KristUtil.validateResponse(Main.sendHTTPRequest(
-                KristURLConstants.KRIST_NAMES_URL + "?limit=" + 1, "GET"));
+        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
+                KristURLConstants.KRIST_NAMES_URL + "?limit=" + 1, "GET");
         return response.get("total").getAsInt();
     }
 
     @NotNull
     public static List<KristName> getAllNamesOwned(String address, int limit, int offset) {
         List<KristName> list = new ArrayList<>(limit);
-        JsonObject response = KristUtil.validateResponse(Main.sendHTTPRequest(
+        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
                 KristURLConstants.KRIST_ADDRESSES + "/" + address + "/names" + "?limit=" + limit +
-                        "&offset=" + offset, "GET"));
+                        "&offset=" + offset, "GET");
         JsonArray addresses = response.getAsJsonArray("names");
         for (JsonElement element : addresses) {
             list.add(addresses.asList().indexOf(element),
@@ -94,9 +94,9 @@ public class NameAPI {
 
     @NotNull
     public static Integer getTotalNamesOwned(String address) {
-        return KristUtil.validateResponse(Main.sendHTTPRequest(
+        return KristUtil.sendAndValidateHTTPRequest(
                 KristURLConstants.KRIST_ADDRESSES + "/" + address + "/names" +
-                        "?limit=1", "GET")).get("total").getAsInt();
+                        "?limit=1", "GET").get("total").getAsInt();
     }
 
     @NotNull
@@ -106,9 +106,9 @@ public class NameAPI {
 
     @NotNull
     public static KristTransaction transferName(String privatekey, String recipient, String name) {
-        return TransactionAPI.getTransaction(KristUtil.validateResponse(
-                Main.sendHTTPRequestWithContent(KristURLConstants.KRIST_NAMES_URL + "/" + name +
-                        "/transfer", "POST", Map.of("address", recipient, "privatekey", privatekey))));
+        return TransactionAPI.getTransaction(KristUtil.sendAndValidateHTTPRequestWithContent(
+                KristURLConstants.KRIST_NAMES_URL + "/" + name + "/transfer", "POST",
+                Map.of("address", recipient, "privatekey", privatekey)));
     }
 
     @NotNull
@@ -128,9 +128,8 @@ public class NameAPI {
 
     @NotNull
     public static KristName addDataToName(String privatekey, String name, String data) {
-        return new KristName(KristUtil.validateResponse(
-                Main.sendHTTPRequestWithContent(KristURLConstants.KRIST_NAMES_URL + "/" + name,
-                        "PUT", Map.of("a", data))));
+        return new KristName(KristUtil.sendAndValidateHTTPRequestWithContent(
+                KristURLConstants.KRIST_NAMES_URL + "/" + name, "PUT", Map.of("a", data)));
     }
 
     @NotNull

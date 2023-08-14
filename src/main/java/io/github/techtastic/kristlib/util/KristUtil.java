@@ -1,9 +1,11 @@
 package io.github.techtastic.kristlib.util;
 
 import com.google.gson.JsonObject;
+import io.github.techtastic.kristlib.KristConnectionHandler;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Map;
 
 /**
  * This class is a helper class for any miscellaneous methods
@@ -49,5 +51,17 @@ public class KristUtil {
             throw new RuntimeException(response.get("error").getAsString());
 
         return response;
+    }
+
+    public static JsonObject sendAndValidateHTTPRequest(String url, String method) {
+        return validateResponse(KristConnectionHandler.sendHTTPRequest(url, method));
+    }
+
+    public static JsonObject sendAndValidateHTTPRequestWithContent(String url, String method, Map<String, String> content) {
+        return validateResponse(KristConnectionHandler.sendHTTPRequestWithContent(url, method, content));
+    }
+
+    public static JsonObject sendAndValidateWSSRequest(JsonObject request) {
+        return validateResponse(KristConnectionHandler.sendWSSRequest(request));
     }
 }

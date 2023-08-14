@@ -3,7 +3,7 @@ package io.github.techtastic.kristlib.api.address;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.Main;
+import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.util.KristURLConstants;
 import io.github.techtastic.kristlib.util.KristUtil;
 
@@ -28,8 +28,8 @@ public class AddressAPI {
         KristAddress address = getAddressFromPrivateKey(privatekey);
 
         // Create address info by authentication
-        KristUtil.validateAuth(Main.manager.login(privatekey));
-        Main.manager.logout();
+        KristUtil.validateAuth(KristConnectionHandler.login(privatekey));
+        KristConnectionHandler.logout();
         address.update();
 
         // Return newly created KristAddress from the vs2 address
@@ -63,9 +63,8 @@ public class AddressAPI {
      * @return the address as a KristAddress belonging to the key
      */
     public static KristAddress getAddressFromPrivateKey(String privatekey) {
-        return new KristAddress(KristUtil.validateResponse(Main.sendHTTPRequestWithContent(
-                KristURLConstants.KRIST_ADDRESS_FROM_KEY, "POST",
-                Map.of("privatekey", privatekey))));
+        return new KristAddress(KristUtil.sendAndValidateHTTPRequestWithContent(
+                KristURLConstants.KRIST_ADDRESS_FROM_KEY, "POST", Map.of("privatekey", privatekey)));
     }
 
     /**
@@ -77,9 +76,9 @@ public class AddressAPI {
      */
     public static List<KristAddress> getAllAddresses(int limit, int offset) {
         List<KristAddress> list = new ArrayList<>(limit);
-        JsonObject response = KristUtil.validateResponse(Main.sendHTTPRequest(
+        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
                 KristURLConstants.KRIST_ADDRESSES + "?limit=" + limit +
-                        "&offset=" + offset, "GET"));
+                        "&offset=" + offset, "GET");
         JsonArray addresses = response.getAsJsonArray("addresses");
         for (JsonElement element : addresses) {
             list.add(addresses.asList().indexOf(element),
@@ -94,8 +93,8 @@ public class AddressAPI {
      * @return the total number of used addresses asa an Integer
      */
     public static Integer getTotalAddressCount() {
-        JsonObject response = KristUtil.validateResponse(Main.sendHTTPRequest(
-                KristURLConstants.KRIST_ADDRESSES + "?limit=" + 1, "GET"));
+        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
+                KristURLConstants.KRIST_ADDRESSES + "?limit=" + 1, "GET");
         return response.get("total").getAsInt();
     }
 }

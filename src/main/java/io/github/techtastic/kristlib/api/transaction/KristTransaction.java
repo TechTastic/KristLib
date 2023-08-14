@@ -1,7 +1,6 @@
 package io.github.techtastic.kristlib.api.transaction;
 
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.Main;
 import io.github.techtastic.kristlib.util.KristURLConstants;
 import io.github.techtastic.kristlib.util.KristUtil;
 import org.jetbrains.annotations.NotNull;
@@ -50,9 +49,9 @@ public class KristTransaction {
      * @param id A transaction ID as an int, usually received from responses from the Krist node
      */
     KristTransaction(int id) {
-        this(KristUtil.validateResponse(Main.sendHTTPRequest(
+        this(KristUtil.sendAndValidateHTTPRequest(
                 KristURLConstants.KRIST_TRANSACTIONS_URL +
-                        "/" + id, "GET")));
+                        "/" + id, "GET"));
     }
 
     /**
