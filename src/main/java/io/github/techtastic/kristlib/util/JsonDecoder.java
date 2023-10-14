@@ -3,7 +3,6 @@ package io.github.techtastic.kristlib.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
@@ -23,7 +22,7 @@ public class JsonDecoder implements Decoder.Text<JsonObject> {
 
     @Override
     public boolean willDecode(String s) {
-        return (s != null);
+        return s != null;
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
  * @author TechTastic
  */
 public class CommonMeta {
-    private String meta;
+    private final String meta;
     private String recipient;
     private String returnTo;
     private Boolean donate;

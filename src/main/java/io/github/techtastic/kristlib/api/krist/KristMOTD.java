@@ -2,8 +2,6 @@ package io.github.techtastic.kristlib.api.krist;
 
 import com.google.gson.JsonObject;
 
-import java.sql.Date;
-
 /**
  * This class is for the storage and reference of the MOTD and general Krist server info
  *
@@ -22,8 +20,8 @@ import java.sql.Date;
 public record KristMOTD(
         String motd,
         String set,
-        Date motdSet,
-        Date serverTime,
+        String motdSet,
+        String serverTime,
         String publicUrl,
         String publicWSUrl,
         boolean debugMode,
@@ -41,8 +39,8 @@ public record KristMOTD(
         this(
                 motd.get("motd").getAsString(),
                 motd.get("set").getAsString(),
-                Date.valueOf(motd.get("motd_set").getAsString()),
-                Date.valueOf(motd.get("server_time").getAsString()),
+                motd.get("motd_set").getAsString(),
+                motd.get("server_time").getAsString(),
                 motd.get("public_url").getAsString(),
                 motd.get("public_ws_url").getAsString(),
                 motd.get("debug_mode").getAsBoolean(),
@@ -65,7 +63,7 @@ public record KristMOTD(
                     pack.get("name").getAsString(),
                     pack.get("version").getAsString(),
                     pack.get("author").getAsString(),
-                    pack.get("license").getAsString(),
+                    pack.get("license") == null ? "GPL-3.0" : pack.get("license").getAsString(),
                     pack.get("repository").getAsString()
             );
         }

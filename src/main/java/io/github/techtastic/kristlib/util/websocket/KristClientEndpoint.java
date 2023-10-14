@@ -1,4 +1,4 @@
-package io.github.techtastic.kristlib.websocket;
+package io.github.techtastic.kristlib.util.websocket;
 
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;

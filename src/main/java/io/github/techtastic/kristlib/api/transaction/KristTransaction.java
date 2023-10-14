@@ -3,10 +3,10 @@ package io.github.techtastic.kristlib.api.transaction;
 import com.google.gson.JsonObject;
 import io.github.techtastic.kristlib.util.KristURLConstants;
 import io.github.techtastic.kristlib.util.KristUtil;
+import io.github.techtastic.kristlib.util.http.HTTPRequestType;
+import io.github.techtastic.kristlib.util.http.KristHTTPHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.sql.Date;
 
 /**
  * This class is for handling Krist transaction and their related information
@@ -36,11 +36,11 @@ public class KristTransaction {
         this.receiver = transaction.get("to").getAsString();
         this.value = transaction.get("value").getAsInt();
         this.date = transaction.get("time").getAsString();
-        this.name = transaction.get("name").getAsString();
+        this.name = KristUtil.handleJsonNull(transaction.get("name"));
         this.metadata = transaction.get("metadata").getAsString() == null ? null : new CommonMeta(transaction.get("metadata").getAsString());
-        this.sentMetaname = transaction.get("sent_metaname").getAsString();
-        this.sentName = transaction.get("sent_name").getAsString();
-        this.type = TransactionType.valueOf(transaction.get("type").getAsString());
+        this.sentMetaname = KristUtil.handleJsonNull(transaction.get("sent_metaname"));
+        this.sentName = KristUtil.handleJsonNull(transaction.get("sent_name"));
+        this.type = TransactionType.valueOf(transaction.get("type").getAsString().toUpperCase());
     }
 
     /**
@@ -49,10 +49,11 @@ public class KristTransaction {
      * @param id A transaction ID as an int, usually received from responses from the Krist node
      */
     KristTransaction(int id) {
-        this(KristUtil.sendAndValidateHTTPRequest(
-                KristURLConstants.KRIST_TRANSACTIONS_URL +
-                        "/" + id, "GET"));
+        this(KristHTTPHandler.getInfoFromHTTP(
+                KristURLConstants.KRIST_TRANSACTIONS_URL.getUrl() +
+                        "/" + id, HTTPRequestType.GET));
     }
+
 
     /**
      * This method is for getting the transtaction ID
@@ -100,8 +101,8 @@ public class KristTransaction {
      * @return the time of the transaction as a Date
      */
     @NotNull
-    public Date getDate() {
-        return Date.valueOf(this.date);
+    public String getDate() {
+        return this.date;
     }
 
     /**
@@ -176,5 +177,10 @@ public class KristTransaction {
         result.addProperty("type", this.type.toString());
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.getAsJson().toString();
     }
 }

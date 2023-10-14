@@ -1,7 +1,8 @@
-package io.github.techtastic.kristlib.websocket;
+package io.github.techtastic.kristlib.util.websocket;
 
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.KristConnectionHandler;
+import io.github.techtastic.kristlib.util.KristUtil;
+import org.jetbrains.annotations.Nullable;
 
 import javax.websocket.MessageHandler;
 
@@ -17,15 +18,15 @@ public class KristEventMessageHandler implements MessageHandler.Whole<String> {
             return;
 
         this.event = event;
-        System.err.println(event);
     }
 
     public boolean verifyEvent(String event) {
-        JsonObject eventObject = KristConnectionHandler.DECODER.decode(event);
+        JsonObject eventObject = KristUtil.DECODER.decode(event);
         return eventObject.has("type") &&
                 eventObject.get("type").getAsString().equals("event");
     }
 
+    @Nullable
     public String getEventOrNull() {
         return this.event;
     }

@@ -1,13 +1,12 @@
 package io.github.techtastic.kristlib.api.name;
 
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.util.KristURLConstants;
 import io.github.techtastic.kristlib.util.KristUtil;
+import io.github.techtastic.kristlib.util.http.HTTPRequestType;
+import io.github.techtastic.kristlib.util.http.KristHTTPHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.sql.Date;
 
 /**
  * This class is for handling Krist names and their related information
@@ -35,8 +34,8 @@ public class KristName {
         this.originalOwner = name.get("original_owner").getAsString();
         this.registration = name.get("registered").getAsString();
         this.lastUpdated = name.get("updated").getAsString();
-        this.lastTransfer = name.get("transferred").getAsString();
-        this.data = name.get("a").getAsString();
+        this.lastTransfer = KristUtil.handleJsonNull(name.get("transferred"));
+        this.data = KristUtil.handleJsonNull(name.get("a"));
         this.unpaid = name.get("unpaid").getAsInt();
     }
 
@@ -46,9 +45,7 @@ public class KristName {
      * @param name A String of the name, usually received from responses from the Krist node
      */
     KristName(@NotNull String name) {
-        this(KristUtil.validateResponse(
-                KristConnectionHandler.sendHTTPRequest(KristURLConstants.KRIST_NAMES_URL +
-                        "/" + name, "GET")));
+        this(KristHTTPHandler.getInfoFromHTTP(KristURLConstants.KRIST_NAMES_URL.getUrl() + "/" + name, HTTPRequestType.GET).getAsJsonObject("name"));
     }
 
     /**
@@ -90,9 +87,9 @@ public class KristName {
      * @return the purchase/registration date of the name
      */
     @NotNull
-    public Date getRegistrationDate() {
+    public String getRegistrationDate() {
         this.update();
-        return Date.valueOf(this.registration);
+        return this.registration;
     }
 
     /**
@@ -101,9 +98,9 @@ public class KristName {
      * @return the last update date of the name, by registration or trade
      */
     @NotNull
-    public Date getLastUpdatedDate() {
+    public String getLastUpdatedDate() {
         this.update();
-        return Date.valueOf(this.lastUpdated);
+        return this.lastUpdated;
     }
 
     /**
@@ -112,9 +109,9 @@ public class KristName {
      * @return the last transfer date of the name or null
      */
     @Nullable
-    public Date getLastTransferredDate() {
+    public String getLastTransferredDate() {
         this.update();
-        return Date.valueOf(this.lastTransfer);
+        return this.lastTransfer;
     }
 
     /**
@@ -143,16 +140,14 @@ public class KristName {
      * This method is for updating the information of the name
      */
     public void update() {
-        JsonObject response = KristUtil.validateResponse(
-                KristConnectionHandler.sendHTTPRequest(KristURLConstants.KRIST_NAMES_URL +
-                        "/" + this.name, "GET"));
+        JsonObject response = KristHTTPHandler.getInfoFromHTTP(KristURLConstants.KRIST_NAMES_URL.getUrl() + "/" + name, HTTPRequestType.GET).getAsJsonObject("name");
         this.name = response.get("name").getAsString();
         this.owner = response.get("owner").getAsString();
         this.originalOwner = response.get("original_owner").getAsString();
         this.registration = response.get("registered").getAsString();
         this.lastUpdated = response.get("updated").getAsString();
-        this.lastTransfer = response.get("transferred").getAsString();
-        this.data = response.get("a").getAsString();
+        this.lastTransfer = KristUtil.handleJsonNull(response.get("transferred"));
+        this.data = KristUtil.handleJsonNull(response.get("a"));
         this.unpaid = response.get("unpaid").getAsInt();
     }
 
@@ -176,5 +171,10 @@ public class KristName {
         result.addProperty("unpaid", this.unpaid);
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.getAsJson().toString();
     }
 }

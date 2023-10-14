@@ -1,12 +1,10 @@
 package io.github.techtastic.kristlib.api.address;
 
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.util.KristURLConstants;
-import io.github.techtastic.kristlib.util.KristUtil;
+import io.github.techtastic.kristlib.util.http.HTTPRequestType;
+import io.github.techtastic.kristlib.util.http.KristHTTPHandler;
 import org.jetbrains.annotations.NotNull;
-
-import java.sql.Date;
 
 /**
 * This class is for handling Krist addresses and their related information
@@ -27,10 +25,10 @@ public class KristAddress {
      */
     KristAddress(@NotNull JsonObject address) {
         this.address = address.get("address").getAsString();
-        this.balance = address.get("balance").getAsInt();
-        this.totalIncome = address.get("totalin").getAsInt();
-        this.totalSpent = address.get("totalout").getAsInt();
-        this.firstSeen = address.get("firstseen").getAsString();
+        this.balance = address.get("balance") == null ? 0: address.get("balance").getAsInt();
+        this.totalIncome = address.get("totalin") == null ? 0 : address.get("totalin").getAsInt();
+        this.totalSpent = address.get("totalout") == null ? 0 : address.get("totalout").getAsInt();
+        this.firstSeen = address.get("firstseen") == null ? "never" : address.get("firstseen").getAsString();
     }
 
     /**
@@ -39,9 +37,8 @@ public class KristAddress {
      * @param address A String of the address, usually from responses from the Krist node
      */
     KristAddress(@NotNull String address) {
-        this(KristUtil.validateResponse(
-                KristConnectionHandler.sendHTTPRequest(KristURLConstants.KRIST_ADDRESSES +
-                        "/" + address, "GET")));
+        this(KristHTTPHandler.getInfoFromHTTP(KristURLConstants.KRIST_ADDRESSES.getUrl()
+                + "/" + address, HTTPRequestType.GET).getAsJsonObject("address"));
     }
 
     /**
@@ -94,18 +91,18 @@ public class KristAddress {
      * @return The date the address was first seen
      */
     @NotNull
-    public Date getFirstSeen() {
+    public String getFirstSeen() {
         this.update();
-        return Date.valueOf(this.firstSeen);
+        return this.firstSeen;
     }
 
     /**
      * This method is for updating the information of the address
      */
     public void update() {
-        JsonObject response = KristUtil.validateResponse(
-                KristConnectionHandler.sendHTTPRequest(KristURLConstants.KRIST_ADDRESSES +
-                        "/" + this.address, "GET"));
+        JsonObject response = KristHTTPHandler.getInfoFromHTTP(KristURLConstants.KRIST_ADDRESSES.getUrl()
+                + "/" + this.address, HTTPRequestType.GET).getAsJsonObject("address");
+
         this.address = response.get("address").getAsString();
         this.balance = response.get("balance").getAsInt();
         this.totalIncome = response.get("totalin").getAsInt();
@@ -130,5 +127,10 @@ public class KristAddress {
         result.addProperty("firstseen", this.firstSeen);
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return this.getAsJson().toString();
     }
 }

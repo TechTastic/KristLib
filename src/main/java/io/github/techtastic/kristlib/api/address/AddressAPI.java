@@ -3,9 +3,10 @@ package io.github.techtastic.kristlib.api.address;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.util.KristURLConstants;
-import io.github.techtastic.kristlib.util.KristUtil;
+import io.github.techtastic.kristlib.util.http.HTTPRequestType;
+import io.github.techtastic.kristlib.util.http.KristHTTPHandler;
+import io.github.techtastic.kristlib.util.websocket.KristWSSHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,14 @@ public class AddressAPI {
      * @param privatekey the private key of the new address
      * @return the newly created address as a KristAddress
      */
-    public static KristAddress createNewAddress(String privatekey) {
+    public static KristAddress createNewAddress(String privatekey, KristWSSHandler websocket) {
         // Get v2 address from Private Key
         KristAddress address = getAddressFromPrivateKey(privatekey);
 
         // Create address info by authentication
-        KristUtil.validateAuth(KristConnectionHandler.login(privatekey));
-        KristConnectionHandler.logout();
+        websocket.login(privatekey);
+        websocket.logout();
+
         address.update();
 
         // Return newly created KristAddress from the vs2 address
@@ -63,8 +65,8 @@ public class AddressAPI {
      * @return the address as a KristAddress belonging to the key
      */
     public static KristAddress getAddressFromPrivateKey(String privatekey) {
-        return new KristAddress(KristUtil.sendAndValidateHTTPRequestWithContent(
-                KristURLConstants.KRIST_ADDRESS_FROM_KEY, "POST", Map.of("privatekey", privatekey)));
+        return new KristAddress(KristHTTPHandler.getInfoFromHTTPWithContent(
+                KristURLConstants.KRIST_ADDRESS_FROM_KEY, HTTPRequestType.POST, Map.of("privatekey", privatekey)));
     }
 
     /**
@@ -76,14 +78,16 @@ public class AddressAPI {
      */
     public static List<KristAddress> getAllAddresses(int limit, int offset) {
         List<KristAddress> list = new ArrayList<>(limit);
-        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
-                KristURLConstants.KRIST_ADDRESSES + "?limit=" + limit +
-                        "&offset=" + offset, "GET");
+        JsonObject response = KristHTTPHandler.getInfoFromHTTP(
+                KristURLConstants.KRIST_ADDRESSES.getUrl() + "?limit=" + limit +
+                        "&offset=" + offset, HTTPRequestType.GET);
+
         JsonArray addresses = response.getAsJsonArray("addresses");
         for (JsonElement element : addresses) {
             list.add(addresses.asList().indexOf(element),
                     new KristAddress(element.getAsJsonObject()));
         }
+
         return list;
     }
 
@@ -93,8 +97,8 @@ public class AddressAPI {
      * @return the total number of used addresses asa an Integer
      */
     public static Integer getTotalAddressCount() {
-        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
-                KristURLConstants.KRIST_ADDRESSES + "?limit=" + 1, "GET");
+        JsonObject response = KristHTTPHandler.getInfoFromHTTP(
+                KristURLConstants.KRIST_ADDRESSES.getUrl() + "?limit=" + 1, HTTPRequestType.GET);
         return response.get("total").getAsInt();
     }
 }

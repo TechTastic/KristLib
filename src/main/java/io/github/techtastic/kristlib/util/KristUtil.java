@@ -1,11 +1,12 @@
 package io.github.techtastic.kristlib.util;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.KristConnectionHandler;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * This class is a helper class for any miscellaneous methods
@@ -13,6 +14,11 @@ import java.util.Map;
  * @author TechTastic
  */
 public class KristUtil {
+    public static final Logger WSS_LOGGER = Logger.getLogger("Krist WSS");
+    public static final Logger HTTP_LOGGER = Logger.getLogger("Krist HTTP");
+    public static JsonEncoder ENCODER = new JsonEncoder();
+    public static JsonDecoder DECODER = new JsonDecoder();
+
     public static String getPrivateKeyFromPassword(String password) {
         return sha256("KRISTWALLET" + password) + "-000";
     }
@@ -37,31 +43,15 @@ public class KristUtil {
         }
     }
 
-    public static JsonObject validateResponse(JsonObject response) {
-        if (!response.get("ok").getAsBoolean())
+    public static JsonObject validateResponse(JsonObject response, Logger logger) {
+        if (response.get("error") != null) {
+            logger.warning("Error in Response from Krist Server:\n" + response);
             throw new RuntimeException(response.get("error").getAsString());
-
+        }
         return response;
     }
 
-    public static JsonObject validateAuth(JsonObject response) {
-        validateResponse(response);
-
-        if (!response.get("auth").getAsBoolean())
-            throw new RuntimeException(response.get("error").getAsString());
-
-        return response;
-    }
-
-    public static JsonObject sendAndValidateHTTPRequest(String url, String method) {
-        return validateResponse(KristConnectionHandler.sendHTTPRequest(url, method));
-    }
-
-    public static JsonObject sendAndValidateHTTPRequestWithContent(String url, String method, Map<String, String> content) {
-        return validateResponse(KristConnectionHandler.sendHTTPRequestWithContent(url, method, content));
-    }
-
-    public static JsonObject sendAndValidateWSSRequest(JsonObject request) {
-        return validateResponse(KristConnectionHandler.sendWSSRequest(request));
+    public static String handleJsonNull(JsonElement element) {
+        return element instanceof JsonNull ? element.getAsJsonNull().toString() : element.getAsString();
     }
 }

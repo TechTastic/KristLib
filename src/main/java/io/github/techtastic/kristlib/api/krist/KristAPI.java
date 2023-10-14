@@ -3,11 +3,10 @@ package io.github.techtastic.kristlib.api.krist;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.techtastic.kristlib.KristConnectionHandler;
 import io.github.techtastic.kristlib.util.KristURLConstants;
-import io.github.techtastic.kristlib.util.KristUtil;
+import io.github.techtastic.kristlib.util.http.HTTPRequestType;
+import io.github.techtastic.kristlib.util.http.KristHTTPHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +24,8 @@ public class KristAPI {
      */
     @NotNull
     public static KristMOTD getMOTD() {
-        return new KristMOTD(KristUtil.sendAndValidateHTTPRequest(
-                KristURLConstants.KRIST_SERVER_INFO, "GET"));
+        return new KristMOTD(KristHTTPHandler.getInfoFromHTTP(
+                KristURLConstants.KRIST_SERVER_INFO, HTTPRequestType.GET));
     }
 
     /**
@@ -37,13 +36,15 @@ public class KristAPI {
     @NotNull
     public static List<KristCommits> getLatestChanges() {
         List<KristCommits> list = new ArrayList<>(10);
-        JsonObject response = KristUtil.sendAndValidateHTTPRequest(
-                KristURLConstants.KRIST_CHANGELOG, "GET");
+        JsonObject response = KristHTTPHandler.getInfoFromHTTP(
+                KristURLConstants.KRIST_CHANGELOG, HTTPRequestType.GET);
+
         JsonArray commits = response.getAsJsonArray("commits");
         for (JsonElement element : commits) {
             list.add(commits.asList().indexOf(element),
                     new KristCommits(element.getAsJsonObject()));
         }
+
         return list;
     }
 
@@ -54,7 +55,7 @@ public class KristAPI {
      */
     @NotNull
     public static Integer getTotalExistingKrist() {
-        return KristUtil.sendAndValidateHTTPRequest(
-                KristURLConstants.KRIST_MONEY_SUPPLY, "GET").get("money_supply").getAsInt();
+        return KristHTTPHandler.getInfoFromHTTP(
+                KristURLConstants.KRIST_MONEY_SUPPLY, HTTPRequestType.GET).get("money_supply").getAsInt();
     }
 }
