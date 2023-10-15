@@ -16,6 +16,9 @@ import java.net.URI;
 import java.net.URL;
 import java.util.logging.Level;
 
+/**
+ * This class is for establishing and maintaining a Websocket connection to the Krist node
+ */
 public class KristWSSHandler {
     public int ID = 0;
     public WebSocketContainer container;
@@ -34,6 +37,11 @@ public class KristWSSHandler {
         return id;
     }
 
+    /**
+     * This method is used to check if this Websocket was initialized
+     *
+     * @return whether the websocket was initialized
+     */
     public boolean isInitialized() {
         return this.isConnectionInitialized;
     }
@@ -94,12 +102,6 @@ public class KristWSSHandler {
         }
     }
 
-    /**
-     * Sends a request to the Krist WebSocket server and waits for a response
-     *
-     * @param obj the request sent to the Krist WebSocket
-     * @return the response from the Krist WebSocket
-     */
     @NotNull
     public JsonObject getInfoFromWSS(JsonObject obj) {
         if (!this.isConnectionInitialized) {
@@ -130,13 +132,6 @@ public class KristWSSHandler {
         }
     }
 
-    /**
-     * Sends a request to the Krist WebSocket server and waits for a response
-     *
-     * @param type the type of the request
-     * @param obj the request to be sent to the Krist WebSocket
-     * @return the response from the Krist WebSocket
-     */
     @NotNull
     public JsonObject getInfoFromWSS(WSSRequestType type, JsonObject obj) {
         obj.addProperty("type", type.getType());

@@ -19,6 +19,13 @@ public class KristUtil {
     public static JsonEncoder ENCODER = new JsonEncoder();
     public static JsonDecoder DECODER = new JsonDecoder();
 
+    /**
+     * This method is for grabbing a private key from a password
+     * I recommend against using it unless you are sure it has not been changed or Mixin'd into by other mods
+     *
+     * @param password the password to be used
+     * @return the newly generated private key
+     */
     public static String getPrivateKeyFromPassword(String password) {
         return sha256("KRISTWALLET" + password) + "-000";
     }
@@ -43,6 +50,13 @@ public class KristUtil {
         }
     }
 
+    /**
+     * This method is for error checking repsonses from HTTP and Websocket requests
+     *
+     * @param response the response
+     * @param logger the logger to log the error with
+     * @return the validated response, if no errors are thrown
+     */
     public static JsonObject validateResponse(JsonObject response, Logger logger) {
         if (response.get("error") != null) {
             logger.warning("Error in Response from Krist Server:\n" + response);

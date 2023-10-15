@@ -51,6 +51,15 @@ public record KristMOTD(
         );
     }
 
+    /**
+     * This class is for the storage and reference of the current Krist package
+     *
+     * @param name
+     * @param version
+     * @param author
+     * @param license
+     * @param repository
+     */
     public record KristPackage(
             String name,
             String version,
@@ -69,6 +78,12 @@ public record KristMOTD(
         }
     }
 
+    /**
+     * This class is for the storage and reference of the Krist server constants
+     *
+     * @param walletVersion
+     * @param nameCost
+     */
     public record KristConstants(
             String walletVersion,
             int nameCost
@@ -81,6 +96,14 @@ public record KristMOTD(
         }
     }
 
+    /**
+     * This class is for the storage and reference of the Krist currency
+     *
+     * @param addressPrefix
+     * @param nameSuffix
+     * @param currencyName
+     * @param currencySymbol
+     */
     public record KristCurrency(
             String addressPrefix,
             String nameSuffix,
