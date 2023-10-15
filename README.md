@@ -26,9 +26,9 @@ Add the dependency:
 
 ```xml
 <dependency>
-<groupId>com.github.TechTastic</groupId>
-<artifactId>KristLib</artifactId>
-<version>master-SNAPSHOT</version>
+    <groupId>com.github.TechTastic</groupId>
+    <artifactId>KristLib</artifactId>
+    <version>master-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -38,11 +38,11 @@ Add the repository:
 
 ```groovy
 dependencyResolutionManagement {
-	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-	repositories {
-		mavenCentral()
-		maven { url 'https://jitpack.io' }
-	}
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
 
