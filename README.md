@@ -28,7 +28,7 @@ Add the dependency:
 <dependency>
 <groupId>com.github.TechTastic</groupId>
 <artifactId>KristLib</artifactId>
-<version>Tag</version>
+<version>master-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -50,7 +50,7 @@ Add the dependency:
 
 ```groovy
 dependencies {
-    implementation 'com.github.TechTastic:KristLib:Tag'
+    implementation 'com.github.TechTastic:KristLib:master-SNAPSHOT'
 }
 ```
 
