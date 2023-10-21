@@ -1,16 +1,57 @@
 # KristLib
-**A Java library for interacting with Krist**
 
-Krist Documentation: https://docs.krist.dev/docs/
+Java wrapper for the [Krist] API
 
-## Adding to an existing Project
-In your project's build.gradle, add the JitPack repository and the dependency like this:
+[![github](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/github_vector.svg)](https://github.com/TechTastic/KristLib)
+[![jitpack](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/jitpack_vector.svg)](https://jitpack.io/#TechTastic/KristLib/master-SNAPSHOT)
+[![maven](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/maven_vector.svg)](https://maven.apache.org/)
+[![java](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/java_vector.svg)](https://java.com)
+
+## Adding to your project
+
+### Maven with JitPack
+
+Add the repository:
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+Add the dependency:
+
+```xml
+<dependency>
+    <groupId>com.github.TechTastic</groupId>
+    <artifactId>KristLib</artifactId>
+    <version>master-SNAPSHOT</version>
+</dependency>
+```
+
+### Gradle with JitPack
+
+Add the repository:
+
 ```groovy
-repositories {
-  maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-  implementation 'com.github.TechTastic:KristLib:master-SNAPSHOT'
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
+
+Add the dependency:
+
+```groovy
+dependencies {
+    implementation 'com.github.TechTastic:KristLib:master-SNAPSHOT'
+}
+```
+
+[Krist]: https://krist.dev
