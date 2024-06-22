@@ -2,20 +2,16 @@ package io.github.techtastic.kristlib.api.transaction;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+
 /**
  * This class is for giving transaction metadata in CommonMeta format rather than a vague String
  *
  * @author TechTastic
  */
 public class CommonMeta {
+    private final HashMap<String, Object> metadata = new HashMap<String,Object>();
     private final String meta;
-    private String recipient;
-    private String returnTo;
-    private Boolean donate;
-    private String username;
-    private String message;
-    private String error;
-    private String epoch;
 
     /**
      * Creates CommonMeta from String
@@ -25,58 +21,23 @@ public class CommonMeta {
     CommonMeta(String meta) {
         this.meta = meta;
         if (meta != null) {
-            this.recipient = parseRecipient(meta);
-            this.returnTo = parseField(meta, "return");
-            this.donate = parseBoolean(meta, "donate");
-            this.username = parseField(meta, "username");
-            this.message = parseField(meta, "message");
-            this.error = parseField(meta, "error");
-            this.epoch = parseField(meta, "epoch");
+            String sub = meta;
+            while (!sub.isEmpty()) {
+                int kst = sub.indexOf(".kst");
+                if (kst != -1) {
+                    this.metadata.put("recipient", sub.substring(0, kst));
+                    sub = sub.replace((String) this.metadata.get("recipient"), "");
+                }
+
+                int eq = sub.indexOf("=");
+                int sc = sub.indexOf(";");
+                if (eq == -1 && sc == -1) break;
+                String field = sub.substring(0, eq);
+                String value = sub.substring(eq + 1, sc);
+                this.metadata.put(field, value);
+                sub = sub.replace(field + "=" + value + ";", "");
+            }
         }
-    }
-
-    /**
-     * This method is for parsing the recipient out of the raw metadata, if there is one
-     *
-     * @param meta the raw metadata as a String
-     * @return the recipient's name, metaname, or null
-     */
-    private String parseRecipient(String meta) {
-        int kst = meta.indexOf(".kst");
-        if (kst == -1)
-            return null;
-        return meta.substring(0, kst);
-    }
-
-    /**
-     * This method is for parsing specific fields out of the raw metadata, if there are any fields
-     *
-     * @param meta the raw metadata as a String
-     * @param field the name of the field to be parsed
-     * @return the value of the field or null
-     */
-    private String parseField(String meta, String field) {
-        int index = meta.indexOf(field + "=");
-        if (index == -1)
-            return null;
-        int start = index + field.length();
-        int end = meta.indexOf(";", index + 1);
-        return end == -1 ? meta.substring(start) :
-                meta.substring(start, end);
-    }
-
-    /**
-     * This method is for parsing specific boolean fields out of the raw metadata, if there are any booleans
-     *
-     * @param meta the raw metadata as a String
-     * @param field the name of the boolean field to be parsed
-     * @return the value of the field or false if null
-     */
-    private boolean parseBoolean(String meta, String field) {
-        String value = parseField(meta, field);
-        if (value == null)
-            return false;
-        return Boolean.parseBoolean(value);
     }
 
     /**
@@ -90,13 +51,24 @@ public class CommonMeta {
     }
 
     /**
+     * This method is for attempting ot grab a specific field from the metadata, can be null
+     *
+     * @param field the requested field
+     * @return the field's value or null
+     */
+    @Nullable
+    public Object getFromField(String field) {
+        return this.metadata.get(field);
+    }
+
+    /**
      * This method is for getting the recipient's name or metaname, if specified
      *
      * @return the recipient's name as a String, metaname as a String, or null
      */
     @Nullable
     public String getRecipient() {
-        return this.recipient;
+        return (String) this.metadata.get("recipient");
     }
 
     /**
@@ -106,7 +78,7 @@ public class CommonMeta {
      */
     @Nullable
     public String getReturnAddressOrName() {
-        return this.returnTo;
+        return (String) this.metadata.get("return");
     }
 
     /**
@@ -116,7 +88,7 @@ public class CommonMeta {
      */
     @Nullable
     public Boolean isDonation() {
-        return this.donate;
+        return Boolean.parseBoolean((String) this.metadata.get("donate"));
     }
 
     /**
@@ -126,7 +98,7 @@ public class CommonMeta {
      */
     @Nullable
     public String getUsername() {
-        return this.username;
+        return (String) this.metadata.get("username");
     }
 
     /**
@@ -136,7 +108,7 @@ public class CommonMeta {
      */
     @Nullable
     public String getMessage() {
-        return this.message;
+        return (String) this.metadata.get("message");
     }
 
     /**
@@ -146,7 +118,7 @@ public class CommonMeta {
      */
     @Nullable
     public String getError() {
-        return this.error;
+        return (String) this.metadata.get("error");
     }
 
     /**
@@ -156,6 +128,6 @@ public class CommonMeta {
      */
     @Nullable
     public String getEpochTime() {
-        return this.epoch;
+        return (String) this.metadata.get("epoch");
     }
 }
