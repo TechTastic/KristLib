@@ -57,7 +57,7 @@ public class CommonMeta {
      * @return the field's value or null
      */
     @Nullable
-    public Object getFromField(String field) {
+    public String getFromField(String field) {
         return this.metadata.get(field);
     }
 
