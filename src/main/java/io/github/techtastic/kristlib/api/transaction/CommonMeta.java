@@ -10,7 +10,7 @@ import java.util.HashMap;
  * @author TechTastic
  */
 public class CommonMeta {
-    private final HashMap<String, Object> metadata = new HashMap<String,Object>();
+    private final HashMap<String, String> metadata = new HashMap<>();
     private final String meta;
 
     /**
